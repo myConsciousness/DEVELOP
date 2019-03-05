@@ -1,4 +1,3 @@
-package com.utilkit.java.CalendarHandler;
 /**
  * Copyright (c) 2019 Kato Shinya
  * Released under the MIT license
@@ -21,6 +20,7 @@ package com.utilkit.java.CalendarHandler;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+package com.utilkit.java.CalendarHandler;
 
 import java.util.Arrays;
 import java.util.Comparator;
