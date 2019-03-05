@@ -1020,6 +1020,7 @@ public class CalendarHandler {
 		}
 
 		Date parsedDate = null;
+
 		try {
 			parsedDate = sdf.parse(date);
 		} catch (ParseException e) {
