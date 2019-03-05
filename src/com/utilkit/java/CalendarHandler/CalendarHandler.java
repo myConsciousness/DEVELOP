@@ -20,7 +20,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-
 package com.utilkit.java.CalendarHandler;
 
 import java.text.ParseException;
@@ -77,7 +76,7 @@ public class CalendarHandler {
 	 * </DD>
 	 * </DL>
 	 */
-	private static final Calendar cal = Calendar.getInstance();;
+	private static final Calendar cal = Calendar.getInstance();
 
 	/**
 	 * <DL>
@@ -89,6 +88,20 @@ public class CalendarHandler {
 	 * </DL>
 	 */
 	private static final SimpleDateFormat sdf = new SimpleDateFormat(DateFormatInfo.DEFALUT.getFormat());
+
+	/**
+	 * <DL>
+	 * <DT>Description:</DT>
+	 * <DD>
+	 * Class field to hold the date required for data processing.<br>
+	 *
+	 * It is initialized with empty string at the time the instance is created.
+	 * So when using some argumentless methods of the class,<br>
+	 * you surely need to set the date using {@link #setDate}.<br>
+	 * </DD>
+	 * </DL>
+	 */
+	private String date = "";
 
 	// ================= constructor =====================================
 
@@ -143,11 +156,11 @@ public class CalendarHandler {
 	 * @param dateFormat [i] Value of date format
 	 * @throws IllegalArgumentException throws when the argument is not valid
 	 *
-	 * @see #setDateFormat(String)
+	 * @see #applyPattern(String)
 	 */
 	public static CalendarHandler getInstance(String dateFormat) {
 
-		InstanceHolder.INSTANCE.setDateFormat(dateFormat);
+		InstanceHolder.INSTANCE.applyPattern(dateFormat);
 
 		return InstanceHolder.INSTANCE;
 	}
@@ -171,7 +184,7 @@ public class CalendarHandler {
 
 		/** The field to hold the singleton instance.
 		 */
-		private static final CalendarHandler INSTANCE = new CalendarHandler();
+		private static final CalendarHandler INSTANCE = CalendarHandler.getInstance();
 	}
 
 	// ================= public methods =====================================
@@ -184,11 +197,11 @@ public class CalendarHandler {
 	 * </DD>
 	 * <DT>Example:</DT>
 	 * <DD>
-	 * <strong>CalendarHandler calendarHandler = new CalendarHandler();</strong><br>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance();</strong><br>
 	 * <strong>calendarHandler.getSystemDate();</strong><br>
 	 * <strong>then "20190216"</strong><br>
 	 * <br>
-	 * <strong>CalendarHandler calendarHandler = new CalendarHandler(DateFormatInfo.FORMAT_COMMA.getFormat());</strong><br>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance(DateFormatInfo.FORMAT_COMMA.getFormat());</strong><br>
 	 * <strong>calendarHandler.getSystemDate();</strong><br>
 	 * <strong>then "2019.02.16"</strong><br>
 	 * </DD>
@@ -220,16 +233,58 @@ public class CalendarHandler {
 	 * <DL>
 	 * <DT>Description:</DT>
 	 * <DD>
-	 * Return enum class of week information linked to the argument.<br>
+	 * Return enum class of week information linked to the date.<br>
+	 * </DD>
+	 * <DT>Note:</DT>
+	 * <DD>
+	 * If the corresponding week information does not exist, null will be returned.<br>
 	 * </DD>
 	 * <DT>Example:</DT>
 	 * <DD>
-	 * <strong>CalendarHandler calendarHandler = new CalendarHandler();</strong><br>
-	 * <strong>WeekInfo weekInfo = calendarHandler.getDayOfWeekInfoByDateOf("20190216");</strong><br>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance();</strong><br>
+	 * <strong>WeekInfo weekInfo = calendarHandler.getDayOfWeekInfoByDate("20190216");</strong><br>
 	 * <strong>weekInfo.getJapaneseName(); then "“y—j“ú"</strong><br>
 	 * <br>
-	 * <strong>CalendarHandler calendarHandler = new CalendarHandler(DateFormatInfo.FORMAT_COMMA.getFormat());</strong><br>
-	 * <strong>WeekInfo weekInfo = calendarHandler.getDayOfWeekInfoByDateOf("2019.02.17");</strong><br>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance(DateFormatInfo.FORMAT_COMMA.getFormat());</strong><br>
+	 * <strong>WeekInfo weekInfo = calendarHandler.getDayOfWeekInfoByDate("2019.02.17");</strong><br>
+	 * <strong>weekInfo.getEnglishName(); then "Saturday"</strong><br>
+	 * </DD>
+	 * </DL>
+	 *
+	 * @return Returns week information linked to the date. See detail {@link WeekInfo}.
+	 *
+	 * @see WeekInfo
+	 * @see #getDayOfWeekInfoByDate(String)
+	 */
+	public WeekInfo getDayOfWeekInfoByDate() {
+
+		String date = this.getDate();
+
+		if (!StringChecker.isEffectiveString(date)) {
+			return null;
+		}
+
+		return this.getDayOfWeekInfoByDate(date);
+	}
+
+	/**
+	 * <DL>
+	 * <DT>Description:</DT>
+	 * <DD>
+	 * Return enum class of week information linked to the argument.<br>
+	 * </DD>
+	 * <DT>Note:</DT>
+	 * <DD>
+	 * If the corresponding week information does not exist, null will be returned.<br>
+	 * </DD>
+	 * <DT>Example:</DT>
+	 * <DD>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance();</strong><br>
+	 * <strong>WeekInfo weekInfo = calendarHandler.getDayOfWeekInfoByDate("20190216");</strong><br>
+	 * <strong>weekInfo.getJapaneseName(); then "“y—j“ú"</strong><br>
+	 * <br>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance(DateFormatInfo.FORMAT_COMMA.getFormat());</strong><br>
+	 * <strong>WeekInfo weekInfo = calendarHandler.getDayOfWeekInfoByDate("2019.02.17");</strong><br>
 	 * <strong>weekInfo.getEnglishName(); then "Saturday"</strong><br>
 	 * </DD>
 	 * </DL>
@@ -238,7 +293,7 @@ public class CalendarHandler {
 	 * @return Returns week information linked to the argument. See detail {@link WeekInfo}.
 	 *
 	 * @see #spritDate(String)
-	 * @see java.util.CalendarHandler.ICalendarInfoEnum#getByCode(Class, int)
+	 * @see com.utilkit.java.CalendarHandler.ICalendarInfoEnum#getByCode(Class, int)
 	 * @see WeekInfo
 	 * @see FormatInfo#yyyy
 	 * @see FormatInfo#MM
@@ -246,19 +301,23 @@ public class CalendarHandler {
 	 */
 	public WeekInfo getDayOfWeekInfoByDate(String date) {
 
-		int code = -1;
 		final Map<String, String> dateMap = this.spritDate(date);
 
-		if (!dateMap.isEmpty()) {
+		if (dateMap.isEmpty()) {
+			return null;
+		}
 
-			final int year = Integer.parseInt(dateMap.get(FormatInfo.yyyy.getFormat()));
-			final int month = Integer.parseInt(dateMap.get(FormatInfo.MM.getFormat()));
-			final int day = Integer.parseInt(dateMap.get(FormatInfo.dd.getFormat()));
+		final int year = Integer.parseInt(dateMap.get(FormatInfo.yyyy.getFormat()));
+		final int month = Integer.parseInt(dateMap.get(FormatInfo.MM.getFormat()));
+		final int day = Integer.parseInt(dateMap.get(FormatInfo.dd.getFormat()));
 
-			cal.clear();
-			cal.set(year, month-1, day);
+		cal.clear();
+		cal.set(year, month-1, day);
 
-			code = cal.get(Calendar.DAY_OF_WEEK);
+		final int code = cal.get(Calendar.DAY_OF_WEEK);
+
+		if (!ICalendarInfoEnum.hasCode(WeekInfo.class, code)) {
+			return null;
 		}
 
 		return ICalendarInfoEnum.getByCode(WeekInfo.class, code);
@@ -268,16 +327,58 @@ public class CalendarHandler {
 	 * <DL>
 	 * <DT>Description:</DT>
 	 * <DD>
-	 * Return enum class of month information linked to the argument.<br>
+	 * Return enum class of month information linked to the date.<br>
+	 * </DD>
+	 * <DT>Note:</DT>
+	 * <DD>
+	 * If the corresponding month information does not exist, null will be returned.<br>
 	 * </DD>
 	 * <DT>Example:</DT>
 	 * <DD>
-	 * <strong>CalendarHandler calendarHandler = new CalendarHandler();</strong><br>
-	 * <strong>MonthInfo weekInfo = calendarHandler.getMonthInfoByDateOf("20190216");</strong><br>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance();</strong><br>
+	 * <strong>MonthInfo weekInfo = calendarHandler.getMonthInfoByDate("20190216");</strong><br>
 	 * <strong>monthInfo.getJapaneseName(); then "2ŒŽ"</strong><br>
 	 * <br>
-	 * <strong>CalendarHandler calendarHandler = new CalendarHandler(DateFormatInfo.FORMAT_COMMA.getFormat());</strong><br>
-	 * <strong>MonthInfo weekInfo = calendarHandler.getMonthInfoByDateOf("2019.02.17");</strong><br>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance(DateFormatInfo.FORMAT_COMMA.getFormat());</strong><br>
+	 * <strong>MonthInfo weekInfo = calendarHandler.getMonthInfoByDate("2019.02.17");</strong><br>
+	 * <strong>monthInfo.getEnglishName(); then "February"</strong><br>
+	 * </DD>
+	 * </DL>
+	 *
+	 * @return Returns month information linked to the date. See detail {@link MonthInfo}.
+	 *
+	 * @see MonthInfo
+	 * @see #getMonthInfoByDate(String)
+	 */
+	public MonthInfo getMonthInfoByDate() {
+
+		String date = this.getDate();
+
+		if (!StringChecker.isEffectiveString(date)) {
+			return null;
+		}
+
+		return this.getMonthInfoByDate(date);
+	}
+
+	/**
+	 * <DL>
+	 * <DT>Description:</DT>
+	 * <DD>
+	 * Return enum class of month information linked to the argument.<br>
+	 * </DD>
+	 * <DT>Note:</DT>
+	 * <DD>
+	 * If the corresponding month information does not exist, null will be returned.<br>
+	 * </DD>
+	 * <DT>Example:</DT>
+	 * <DD>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance();</strong><br>
+	 * <strong>MonthInfo weekInfo = calendarHandler.getMonthInfoByDate("20190216");</strong><br>
+	 * <strong>monthInfo.getJapaneseName(); then "2ŒŽ"</strong><br>
+	 * <br>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance(DateFormatInfo.FORMAT_COMMA.getFormat());</strong><br>
+	 * <strong>MonthInfo weekInfo = calendarHandler.getMonthInfoByDate("2019.02.17");</strong><br>
 	 * <strong>monthInfo.getEnglishName(); then "February"</strong><br>
 	 * </DD>
 	 * </DL>
@@ -286,7 +387,7 @@ public class CalendarHandler {
 	 * @return Returns month information linked to the argument. See detail {@link MonthInfo}.
 	 *
 	 * @see #spritDate(String)
-	 * @see java.util.CalendarHandler.ICalendarInfoEnum#getByCode(Class, int)
+	 * @see com.utilkit.java.CalendarHandler.ICalendarInfoEnum#getByCode(Class, int)
 	 * @see MonthInfo
 	 * @see FormatInfo#yyyy
 	 * @see FormatInfo#MM
@@ -294,19 +395,23 @@ public class CalendarHandler {
 	 */
 	public MonthInfo getMonthInfoByDate(String date) {
 
-		int code = -1;
 		final Map<String, String> dateMap = this.spritDate(date);
 
-		if (!dateMap.isEmpty()) {
+		if (dateMap.isEmpty()) {
+			return null;
+		}
 
-			final int year = Integer.parseInt(dateMap.get(FormatInfo.yyyy.getFormat()));
-			final int month = Integer.parseInt(dateMap.get(FormatInfo.MM.getFormat()));
-			final int day = Integer.parseInt(dateMap.get(FormatInfo.dd.getFormat()));
+		final int year = Integer.parseInt(dateMap.get(FormatInfo.yyyy.getFormat()));
+		final int month = Integer.parseInt(dateMap.get(FormatInfo.MM.getFormat()));
+		final int day = Integer.parseInt(dateMap.get(FormatInfo.dd.getFormat()));
 
-			cal.clear();
-			cal.set(year, month-1, day);
+		cal.clear();
+		cal.set(year, month-1, day);
 
-			code = cal.get(Calendar.MONTH);
+		final int code = cal.get(Calendar.MONTH);
+
+		if (!ICalendarInfoEnum.hasCode(MonthInfo.class, code)) {
+			return null;
 		}
 
 		return ICalendarInfoEnum.getByCode(MonthInfo.class, code);
@@ -316,15 +421,59 @@ public class CalendarHandler {
 	 * <DL>
 	 * <DT>Description:</DT>
 	 * <DD>
-	 * Increase or decrease the date according to the argument.<br>
+	 * Increase or decrease the date according to the date.<br>
+	 * </DD>
+	 * <DT>Note:</DT>
+	 * <DD>
+	 * If the date does not exist, empty string will be returned.<br>
 	 * </DD>
 	 * <DT>Example:</DT>
 	 * <DD>
-	 * <strong>CalendarHandler calendarHandler = new CalendarHandler();</strong><br>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance();</strong><br>
 	 * <strong>calendarHandler.adjustDate("20190216", 1, 2, 0);</strong><br>
 	 * <strong>then "20200416"</strong><br>
 	 * <br>
-	 * <strong>CalendarHandler calendarHandler = new CalendarHandler(DateFormatInfo.FORMAT_COMMA.getFormat());</strong><br>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance(DateFormatInfo.FORMAT_COMMA.getFormat());</strong><br>
+	 * <strong>calendarHandler.adjustDate("2019.02.17", 0 -1, -1);</strong><br>
+	 * <strong>then "2019.01.15"</strong><br>
+	 * </DD>
+	 * </DL>
+	 *
+	 * @param amountYear [i] Increase / Decrease in Year
+	 * @param amountMonth [i] Increase / Decrease in Month
+	 * @param amountDay [i] Increase / Decrease in day
+	 * @return Returns an adjusted date
+	 *
+	 * @see #adjustDate(String, int, int, int)
+	 */
+	public String adjustDate(int amountYear, int amountMonth, int amountDay) {
+
+		String date = this.getDate();
+
+		if (!StringChecker.isEffectiveString(date)) {
+			return "";
+		}
+
+		return this.adjustDate(date, amountYear, amountMonth, amountDay);
+	}
+
+	/**
+	 * <DL>
+	 * <DT>Description:</DT>
+	 * <DD>
+	 * Increase or decrease the date according to the argument.<br>
+	 * </DD>
+	 * <DT>Note:</DT>
+	 * <DD>
+	 * If the date does not exist, empty string will be returned.<br>
+	 * </DD>
+	 * <DT>Example:</DT>
+	 * <DD>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance();</strong><br>
+	 * <strong>calendarHandler.adjustDate("20190216", 1, 2, 0);</strong><br>
+	 * <strong>then "20200416"</strong><br>
+	 * <br>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance(DateFormatInfo.FORMAT_COMMA.getFormat());</strong><br>
 	 * <strong>calendarHandler.adjustDate("2019.02.17", 0 -1, -1);</strong><br>
 	 * <strong>then "2019.01.15"</strong><br>
 	 * </DD>
@@ -343,26 +492,24 @@ public class CalendarHandler {
 	 */
 	public String adjustDate(String date, int amountYear, int amountMonth, int amountDay) {
 
-		String resultDate = "";
 		final Map<String, String> dateMap = this.spritDate(date);
 
-		if (!dateMap.isEmpty()) {
-
-			final int year = Integer.parseInt(dateMap.get(FormatInfo.yyyy.getFormat()));
-			final int month = Integer.parseInt(dateMap.get(FormatInfo.MM.getFormat()));
-			final int day = Integer.parseInt(dateMap.get(FormatInfo.dd.getFormat()));
-
-			cal.clear();
-			cal.set(year, month-1, day);
-
-			cal.add(Calendar.YEAR, amountYear);
-			cal.add(Calendar.MONTH, amountMonth);
-			cal.add(Calendar.DAY_OF_MONTH, amountDay);
-
-			resultDate = sdf.format(cal.getTime());
+		if (dateMap.isEmpty()) {
+			return "";
 		}
 
-		return resultDate;
+		final int year = Integer.parseInt(dateMap.get(FormatInfo.yyyy.getFormat()));
+		final int month = Integer.parseInt(dateMap.get(FormatInfo.MM.getFormat()));
+		final int day = Integer.parseInt(dateMap.get(FormatInfo.dd.getFormat()));
+
+		cal.clear();
+		cal.set(year, month-1, day);
+
+		cal.add(Calendar.YEAR, amountYear);
+		cal.add(Calendar.MONTH, amountMonth);
+		cal.add(Calendar.DAY_OF_MONTH, amountDay);
+
+		return sdf.format(cal.getTime());
 	}
 
 	/**
@@ -371,14 +518,55 @@ public class CalendarHandler {
 	 * <DD>
 	 * Increase or decrease the date according to the argument.<br>
 	 * </DD>
+	 * <DT>Note:</DT>
+	 * <DD>
+	 * If the date does not exist, -1 will be returned.<br>
+	 * </DD>
 	 * <DT>Example:</DT>
 	 * <DD>
-	 * <strong>CalendarHandler calendarHandler = new CalendarHandler();</strong><br>
-	 * <strong>calendarHandler.getFirstDayOfMonthFrom("20190216");</strong><br>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance();</strong><br>
+	 * <strong>calendarHandler.getFirstDayOfMonth("20190216");</strong><br>
 	 * <strong>then 1</strong><br>
 	 * <br>
-	 * <strong>CalendarHandler calendarHandler = new CalendarHandler(DateFormatInfo.FORMAT_COMMA.getFormat());</strong><br>
-	 * <strong>calendarHandler.getFirstDayOfMonthFrom("2019.02.17");</strong><br>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance(DateFormatInfo.FORMAT_COMMA.getFormat());</strong><br>
+	 * <strong>calendarHandler.getFirstDayOfMonth("2019.02.17");</strong><br>
+	 * <strong>then 1</strong><br>
+	 * </DD>
+	 * </DL>
+	 *
+	 * @return Returns the first day of the month
+	 *
+	 * @see #getFirstDayOfMonth(String)
+	 */
+	public int getFirstDayOfMonth() {
+
+		String date = this.getDate();
+
+		if (!StringChecker.isEffectiveString(date)) {
+			return -1;
+		}
+
+		return this.getFirstDayOfMonth(date);
+	}
+
+	/**
+	 * <DL>
+	 * <DT>Description:</DT>
+	 * <DD>
+	 * Increase or decrease the date according to the argument.<br>
+	 * </DD>
+	 * <DT>Note:</DT>
+	 * <DD>
+	 * If the date does not exist, -1 will be returned.<br>
+	 * </DD>
+	 * <DT>Example:</DT>
+	 * <DD>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance();</strong><br>
+	 * <strong>calendarHandler.getFirstDayOfMonth("20190216");</strong><br>
+	 * <strong>then 1</strong><br>
+	 * <br>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance(DateFormatInfo.FORMAT_COMMA.getFormat());</strong><br>
+	 * <strong>calendarHandler.getFirstDayOfMonth("2019.02.17");</strong><br>
 	 * <strong>then 1</strong><br>
 	 * </DD>
 	 * </DL>
@@ -393,22 +581,20 @@ public class CalendarHandler {
 	 */
 	public int getFirstDayOfMonth(String date) {
 
-		int firstDay = -1;
 		final Map<String, String> dateMap = this.spritDate(date);
 
-		if (!dateMap.isEmpty()) {
-
-			final int year = Integer.parseInt(dateMap.get(FormatInfo.yyyy.getFormat()));
-			final int month = Integer.parseInt(dateMap.get(FormatInfo.MM.getFormat()));
-			final int day = Integer.parseInt(dateMap.get(FormatInfo.dd.getFormat()));
-
-			cal.clear();
-			cal.set(year, month-1, day);
-
-			firstDay = cal.getActualMinimum(Calendar.DAY_OF_MONTH);
+		if (dateMap.isEmpty()) {
+			return -1;
 		}
 
-		return firstDay;
+		final int year = Integer.parseInt(dateMap.get(FormatInfo.yyyy.getFormat()));
+		final int month = Integer.parseInt(dateMap.get(FormatInfo.MM.getFormat()));
+		final int day = Integer.parseInt(dateMap.get(FormatInfo.dd.getFormat()));
+
+		cal.clear();
+		cal.set(year, month-1, day);
+
+		return cal.getActualMinimum(Calendar.DAY_OF_MONTH);
 	}
 
 	/**
@@ -417,14 +603,55 @@ public class CalendarHandler {
 	 * <DD>
 	 * Increase or decrease the date according to the argument.<br>
 	 * </DD>
+	 * <DT>Note:</DT>
+	 * <DD>
+	 * If the date does not exist, -1 will be returned.<br>
+	 * </DD>
 	 * <DT>Example:</DT>
 	 * <DD>
-	 * <strong>CalendarHandler calendarHandler = new CalendarHandler();</strong><br>
-	 * <strong>calendarHandler.getLastDayOfMonthFrom("20190216");</strong><br>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance();</strong><br>
+	 * <strong>calendarHandler.getLastDayOfMonth("20190216");</strong><br>
 	 * <strong>then 28</strong><br>
 	 * <br>
-	 * <strong>CalendarHandler calendarHandler = new CalendarHandler(DateFormatInfo.FORMAT_COMMA.getFormat());</strong><br>
-	 * <strong>calendarHandler.getLastDayOfMonthFrom("2019.01.17");</strong><br>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance(DateFormatInfo.FORMAT_COMMA.getFormat());</strong><br>
+	 * <strong>calendarHandler.getLastDayOfMonth("2019.01.17");</strong><br>
+	 * <strong>then 31</strong><br>
+	 * </DD>
+	 * </DL>
+	 *
+	 * @return Returns the last day of the month
+	 *
+	 * @see #getLastDayOfMonth(String)
+	 */
+	public int getLastDayOfMonth() {
+
+		String date = this.getDate();
+
+		if (!StringChecker.isEffectiveString(date)) {
+			return -1;
+		}
+
+		return this.getLastDayOfMonth(date);
+	}
+
+	/**
+	 * <DL>
+	 * <DT>Description:</DT>
+	 * <DD>
+	 * Increase or decrease the date according to the argument.<br>
+	 * </DD>
+	 * <DT>Note:</DT>
+	 * <DD>
+	 * If the date does not exist, -1 will be returned.<br>
+	 * </DD>
+	 * <DT>Example:</DT>
+	 * <DD>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance();</strong><br>
+	 * <strong>calendarHandler.getLastDayOfMonth("20190216");</strong><br>
+	 * <strong>then 28</strong><br>
+	 * <br>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance(DateFormatInfo.FORMAT_COMMA.getFormat());</strong><br>
+	 * <strong>calendarHandler.getLastDayOfMonth("2019.01.17");</strong><br>
 	 * <strong>then 31</strong><br>
 	 * </DD>
 	 * </DL>
@@ -439,22 +666,20 @@ public class CalendarHandler {
 	 */
 	public int getLastDayOfMonth(String date) {
 
-		int lastDay = -1;
 		final Map<String, String> dateMap = this.spritDate(date);
 
-		if (!dateMap.isEmpty()) {
-
-			final int year = Integer.parseInt(dateMap.get(FormatInfo.yyyy.getFormat()));
-			final int month = Integer.parseInt(dateMap.get(FormatInfo.MM.getFormat()));
-			final int day = Integer.parseInt(dateMap.get(FormatInfo.dd.getFormat()));
-
-			cal.clear();
-			cal.set(year, month-1, day);
-
-			lastDay = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+		if (dateMap.isEmpty()) {
+			return -1;
 		}
 
-		return lastDay;
+		final int year = Integer.parseInt(dateMap.get(FormatInfo.yyyy.getFormat()));
+		final int month = Integer.parseInt(dateMap.get(FormatInfo.MM.getFormat()));
+		final int day = Integer.parseInt(dateMap.get(FormatInfo.dd.getFormat()));
+
+		cal.clear();
+		cal.set(year, month-1, day);
+
+		return cal.getActualMaximum(Calendar.DAY_OF_MONTH);
 	}
 
 	/**
@@ -463,14 +688,55 @@ public class CalendarHandler {
 	 * <DD>
 	 * Return the beginning day of the week.<br>
 	 * </DD>
+	 * <DT>Note:</DT>
+	 * <DD>
+	 * If the date does not exist, empty string will be returned.<br>
+	 * </DD>
 	 * <DT>Example:</DT>
 	 * <DD>
-	 * <strong>CalendarHandler calendarHandler = new CalendarHandler();</strong><br>
-	 * <strong>calendarHandler.getBeginningDateOfWeekFrom("20190216");</strong><br>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance();</strong><br>
+	 * <strong>calendarHandler.getBeginningDateOfWeek("20190216");</strong><br>
 	 * <strong>then TODO</strong><br>
 	 * <br>
-	 * <strong>CalendarHandler calendarHandler = new CalendarHandler(DateFormatInfo.FORMAT_COMMA.getFormat());</strong><br>
-	 * <strong>calendarHandler.getBeginningDateOfWeekFrom("2019.01.17");</strong><br>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance(DateFormatInfo.FORMAT_COMMA.getFormat());</strong><br>
+	 * <strong>calendarHandler.getBeginningDateOfWeek("2019.01.17");</strong><br>
+	 * <strong>then TODO</strong><br>
+	 * </DD>
+	 * </DL>
+	 *
+	 * @return Returns the beginning day of the week
+	 *
+	 * @see #getBeginningDateOfWeek(String)
+	 */
+	public String getBeginningDateOfWeek() {
+
+		String date = this.getDate();
+
+		if (!StringChecker.isEffectiveString(date)) {
+			return "";
+		}
+
+		return this.getBeginningDateOfWeek(date);
+	}
+
+	/**
+	 * <DL>
+	 * <DT>Description:</DT>
+	 * <DD>
+	 * Return the beginning day of the week.<br>
+	 * </DD>
+	 * <DT>Note:</DT>
+	 * <DD>
+	 * If the date does not exist, -1 will be returned.<br>
+	 * </DD>
+	 * <DT>Example:</DT>
+	 * <DD>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance();</strong><br>
+	 * <strong>calendarHandler.getBeginningDateOfWeek("20190216");</strong><br>
+	 * <strong>then TODO</strong><br>
+	 * <br>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance(DateFormatInfo.FORMAT_COMMA.getFormat());</strong><br>
+	 * <strong>calendarHandler.getBeginningDateOfWeek("2019.01.17");</strong><br>
 	 * <strong>then TODO</strong><br>
 	 * </DD>
 	 * </DL>
@@ -485,23 +751,23 @@ public class CalendarHandler {
 	 */
 	public String getBeginningDateOfWeek(String date) {
 
-		String weekStart = "";
 		final Map<String, String> dateMap = this.spritDate(date);
 
-		if (!dateMap.isEmpty()) {
-
-			final int year = Integer.parseInt(dateMap.get(FormatInfo.yyyy.getFormat()));
-			final int month = Integer.parseInt(dateMap.get(FormatInfo.MM.getFormat()));
-			final int day = Integer.parseInt(dateMap.get(FormatInfo.dd.getFormat()));
-
-			cal.clear();
-			cal.set(year, month-1, day);
-
-			final int dayOfweek = cal.get(Calendar.DAY_OF_WEEK);
-			cal.add(Calendar.DAY_OF_MONTH, -dayOfweek);
-
-			weekStart = sdf.format(cal.getTime());
+		if (dateMap.isEmpty()) {
+			return "";
 		}
+
+		final int year = Integer.parseInt(dateMap.get(FormatInfo.yyyy.getFormat()));
+		final int month = Integer.parseInt(dateMap.get(FormatInfo.MM.getFormat()));
+		final int day = Integer.parseInt(dateMap.get(FormatInfo.dd.getFormat()));
+
+		cal.clear();
+		cal.set(year, month-1, day);
+
+		final int dayOfweek = cal.get(Calendar.DAY_OF_WEEK);
+		cal.add(Calendar.DAY_OF_MONTH, -dayOfweek);
+
+		final String weekStart = sdf.format(cal.getTime());
 
 		return weekStart;
 	}
@@ -512,13 +778,54 @@ public class CalendarHandler {
 	 * <DD>
 	 * Return the end day of the week.<br>
 	 * </DD>
+	 * <DT>Note:</DT>
+	 * <DD>
+	 * If the date does not exist, empty string will be returned.<br>
+	 * </DD>
 	 * <DT>Example:</DT>
 	 * <DD>
-	 * <strong>CalendarHandler calendarHandler = new CalendarHandler();</strong><br>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance();</strong><br>
 	 * <strong>calendarHandler.getEndDateOfWeekFrom("20190216");</strong><br>
 	 * <strong>then TODO</strong><br>
 	 * <br>
-	 * <strong>CalendarHandler calendarHandler = new CalendarHandler(DateFormatInfo.FORMAT_COMMA.getFormat());</strong><br>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance(DateFormatInfo.FORMAT_COMMA.getFormat());</strong><br>
+	 * <strong>calendarHandler.getEndDateOfWeekFrom("2019.01.17");</strong><br>
+	 * <strong>then TODO</strong><br>
+	 * </DD>
+	 * </DL>
+	 *
+	 * @return Returns the end day of the week
+	 *
+	 * @see #getEndDateOfWeek(String)
+	 */
+	public String getEndDateOfWeek() {
+
+		String date = this.getDate();
+
+		if (!StringChecker.isEffectiveString(date)) {
+			return "";
+		}
+
+		return this.getEndDateOfWeek(date);
+	}
+
+	/**
+	 * <DL>
+	 * <DT>Description:</DT>
+	 * <DD>
+	 * Return the end day of the week.<br>
+	 * </DD>
+	 * <DT>Note:</DT>
+	 * <DD>
+	 * If the date does not exist, empty string will be returned.<br>
+	 * </DD>
+	 * <DT>Example:</DT>
+	 * <DD>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance();</strong><br>
+	 * <strong>calendarHandler.getEndDateOfWeekFrom("20190216");</strong><br>
+	 * <strong>then TODO</strong><br>
+	 * <br>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance(DateFormatInfo.FORMAT_COMMA.getFormat());</strong><br>
 	 * <strong>calendarHandler.getEndDateOfWeekFrom("2019.01.17");</strong><br>
 	 * <strong>then TODO</strong><br>
 	 * </DD>
@@ -534,24 +841,24 @@ public class CalendarHandler {
 	 */
 	public String getEndDateOfWeek(String date) {
 
-		String weekEnd = "";
 		final Map<String, String> dateMap = this.spritDate(date);
 
-		if (!dateMap.isEmpty()) {
-
-			final int year = Integer.parseInt(dateMap.get(FormatInfo.yyyy.getFormat()));
-			final int month = Integer.parseInt(dateMap.get(FormatInfo.MM.getFormat()));
-			final int day = Integer.parseInt(dateMap.get(FormatInfo.dd.getFormat()));
-
-			cal.clear();
-			cal.set(year, month-1, day);
-
-			final int dayOfweek = cal.get(Calendar.DAY_OF_WEEK);
-			cal.add(Calendar.DAY_OF_MONTH, -dayOfweek);
-			cal.add(Calendar.DAY_OF_MONTH, 6);
-
-			weekEnd = sdf.format(cal.getTime());
+		if (dateMap.isEmpty()) {
+			return "";
 		}
+
+		final int year = Integer.parseInt(dateMap.get(FormatInfo.yyyy.getFormat()));
+		final int month = Integer.parseInt(dateMap.get(FormatInfo.MM.getFormat()));
+		final int day = Integer.parseInt(dateMap.get(FormatInfo.dd.getFormat()));
+
+		cal.clear();
+		cal.set(year, month-1, day);
+
+		final int dayOfweek = cal.get(Calendar.DAY_OF_WEEK);
+		cal.add(Calendar.DAY_OF_MONTH, -dayOfweek);
+		cal.add(Calendar.DAY_OF_MONTH, 6);
+
+		final String weekEnd = sdf.format(cal.getTime());
 
 		return weekEnd;
 	}
@@ -564,11 +871,11 @@ public class CalendarHandler {
 	 * </DD>
 	 * <DT>Example:</DT>
 	 * <DD>
-	 * <strong>CalendarHandler calendarHandler = new CalendarHandler();</strong><br>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance();</strong><br>
 	 * <strong>calendarHandler.isEffectiveDate("20190216");</strong><br>
 	 * <strong>then {@code true}</strong><br>
 	 * <br>
-	 * <strong>CalendarHandler calendarHandler = new CalendarHandler(DateFormatInfo.FORMAT_COMMA.getFormat());</strong><br>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance(DateFormatInfo.FORMAT_COMMA.getFormat());</strong><br>
 	 * <strong>calendarHandler.isEffectiveDate("2019.01.17");</strong><br>
 	 * <strong>then {@code true}</strong><br>
 	 * </DD>
@@ -577,7 +884,7 @@ public class CalendarHandler {
 	 * @param date [i] Value of the date
 	 * @return Returns {@code true} if the date is valid, or {@code false}
 	 *
-	 * @see java.util.common.StringChecker#isEffectiveString(String)
+	 * @see com.utilkit.java.common.StringChecker#isEffectiveString(String)
 	 */
 	public boolean isEffectiveDate(String date) {
 
@@ -606,11 +913,11 @@ public class CalendarHandler {
 	 * </DD>
 	 * <DT>Example:</DT>
 	 * <DD>
-	 * <strong>CalendarHandler calendarHandler = new CalendarHandler();</strong><br>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance();</strong><br>
 	 * <strong>calendarHandler.isEffectiveDate(TODO);</strong><br>
 	 * <strong>then {@code true}</strong><br>
 	 * <br>
-	 * <strong>CalendarHandler calendarHandler = new CalendarHandler(DateFormatInfo.FORMAT_COMMA.getFormat());</strong><br>
+	 * <strong>CalendarHandler calendarHandler = CalendarHandler.getInstance(DateFormatInfo.FORMAT_COMMA.getFormat());</strong><br>
 	 * <strong>calendarHandler.isEffectiveDate(TODO);</strong><br>
 	 * <strong>then {@code true}</strong><br>
 	 * </DD>
@@ -650,11 +957,11 @@ public class CalendarHandler {
 	 * @param format [i] Value of date format
 	 * @throws IllegalArgumentException throws when the argument is not valid
 	 *
-	 * @see java.util.common.StringChecker#isEffectiveString(String)
-	 * @see java.util.CalendarHandler.IFormatInfoEnum#hasFormat(Class, String)
+	 * @see com.utilkit.java.common.StringChecker#isEffectiveString(String)
+	 * @see com.utilkit.java.CalendarHandler.IFormatInfoEnum#hasFormat(Class, String)
 	 * @see DateFormatInfo
 	 */
-	public void setDateFormat(String format) {
+	public void applyPattern(String format) {
 
 		if (!StringChecker.isEffectiveString(format)) {
 			throw new IllegalArgumentException(String.format("Parameter [%s] is a invalid parameter.", format));
@@ -682,14 +989,13 @@ public class CalendarHandler {
 	 */
 	public String toString(Date date) {
 
-		if (this.isEffectiveDate(date)) {
-			return sdf.format(date);
+		if (!this.isEffectiveDate(date)) {
+			// shouldn't happen
+			assert false;
+			return "";
 		}
 
-		// shouldn't happen
-		assert false;
-
-		return "";
+		return sdf.format(date);
 	}
 
 	/**
@@ -701,23 +1007,161 @@ public class CalendarHandler {
 	 * </DL>
 	 *
 	 * @param date [i] Value of date
-	 * @return Returns converted date
+	 * @return Returns parsed date
 	 *
 	 * @see #isEffectiveDate(String)
 	 */
 	public Date toDate(String date) {
 
-		if (this.isEffectiveDate(date)) {
-			try {
-				return sdf.parse(date);
-			} catch (ParseException e) {
-			}
+		if (!this.isEffectiveDate(date)) {
+			// shouldn't happen
+			assert false;
+			return null;
 		}
 
-		// shouldn't happen
-		assert false;
+		Date parsedDate = null;
+		try {
+			parsedDate = sdf.parse(date);
+		} catch (ParseException e) {
+		}
 
-		return null;
+		return parsedDate;
+	}
+
+	/**
+	 * <DL>
+	 * <DT>Description:</DT>
+	 * <DD>
+	 * Set the date.<br>
+	 * </DD>
+	 * </DL>
+	 *
+	 * @param date [i] Value of date
+	 * @throws IllegalArgumentException throws when the argument is not valid
+	 */
+	public void setDate(String date) {
+
+		if (!isEffectiveDate(date)) {
+			throw new IllegalArgumentException(String.format("Parameter [%s] is a invalid parameter.", date));
+		}
+
+		this.date = date;
+	}
+
+	/**
+	 * <DL>
+	 * <DT>Description:</DT>
+	 * <DD>
+	 * Set the date.<br>
+	 * </DD>
+	 * </DL>
+	 *
+	 * @param Date [i] Value of date
+	 * @throws IllegalArgumentException throws when the argument is not valid
+	 */
+	public void setDate(Date date) {
+
+		final String strDate = this.toString(date);
+
+		if (!StringChecker.isEffectiveString(strDate)) {
+			throw new IllegalArgumentException(String.format("Parameter [%s] is a invalid parameter.", date));
+		}
+
+		this.date = strDate;
+	}
+
+	/**
+	 * <DL>
+	 * <DT>Description:</DT>
+	 * <DD>
+	 * Return the String date.<br>
+	 * </DD>
+	 * </DL>
+	 *
+	 * @return Returns the date.
+	 */
+	public String getDate() {
+
+		return this.date;
+	}
+
+	@Override
+	public int hashCode() {
+
+		final int prime = 31;
+		int result = 1;
+
+		result = prime * result + ((date == null) ? 0 : date.hashCode());
+
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+
+		if (this == obj) {
+			return true;
+		}
+
+		if (obj == null) {
+			return false;
+		}
+
+		if (!(obj instanceof CalendarHandler)) {
+			return false;
+		}
+
+		CalendarHandler other = (CalendarHandler) obj;
+
+		if (date == null) {
+			if (other.date != null) {
+				return false;
+			}
+		} else if (!date.equals(other.date)) {
+			return false;
+		}
+
+		return true;
+	}
+
+	@Override
+	public String toString() {
+
+		String date = this.getDate();
+		StringBuilder sb = new StringBuilder();
+
+		sb	.append("CalendarHandler [date=")
+			.append(date)
+			.append(", getSystemDate()=" )
+			.append(this.getSystemDate());
+
+		if (StringChecker.isEffectiveString(date)) 	{
+
+			sb	.append(", getDayOfWeekInfoByDate()=")
+				.append(this.getDayOfWeekInfoByDate())
+				.append(", getMonthInfoByDate()=")
+				.append(this.getMonthInfoByDate())
+				.append(", getFirstDayOfMonth()=")
+				.append(this.getFirstDayOfMonth())
+				.append(", getLastDayOfMonth()=")
+				.append(this.getLastDayOfMonth())
+				.append(", getBeginningDateOfWeek()=")
+				.append(this.getBeginningDateOfWeek())
+				.append(", getEndDateOfWeek()=")
+				.append(this.getEndDateOfWeek())
+				.append(", getDate()=")
+				.append(date);
+		}
+
+		sb	.append(", hashCode()=")
+			.append(this.hashCode())
+			.append(", getClass()=")
+			.append(this.getClass())
+			.append(", toString()=")
+			.append(super.toString())
+			.append("]");
+
+		return sb.toString();
 	}
 
 	// ================= private methods =====================================
@@ -766,15 +1210,15 @@ public class CalendarHandler {
 	 * </DD>
 	 * </DL>
 	 *
-	 * @param str [i] Value of date
+	 * @param string [i] Value of date
 	 * @return Returns trimmed string
 	 *
 	 * @see SymbolInfo
 	 * @see SymbolInfo#getFormat()
 	 */
-	private String trimSymbolFrom(String str) {
+	private String trimSymbolFrom(String string) {
 
-		String trimmedString = str;
+		String trimmedString = string;
 		final SymbolInfo[] symbolInfo = SymbolInfo.values();
 
 		for (SymbolInfo e : symbolInfo) {
