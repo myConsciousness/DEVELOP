@@ -1133,11 +1133,14 @@ public class CalendarHandler {
 
 		sb	.append("CalendarHandler [date=")
 			.append(date)
+			.append(", getDate()=")
+			.append(date)
 			.append(", getSystemDate()=" )
 			.append(this.getSystemDate());
 
-		if (StringChecker.isEffectiveString(date)) 	{
+		if (StringChecker.isEffectiveString(date)) {
 
+			// impossible to get results if date does not exist
 			sb	.append(", getDayOfWeekInfoByDate()=")
 				.append(this.getDayOfWeekInfoByDate())
 				.append(", getMonthInfoByDate()=")
@@ -1149,9 +1152,7 @@ public class CalendarHandler {
 				.append(", getBeginningDateOfWeek()=")
 				.append(this.getBeginningDateOfWeek())
 				.append(", getEndDateOfWeek()=")
-				.append(this.getEndDateOfWeek())
-				.append(", getDate()=")
-				.append(date);
+				.append(this.getEndDateOfWeek());
 		}
 
 		sb	.append(", hashCode()=")
